@@ -29,24 +29,24 @@ public class Person {
     @Column(nullable = false)
     @NotBlank(message = "Name must not be blank")
     @Size(max = 50, message = "Name must be at most 50 characters")
-    String name;
+    private String name;
 
     @Column(nullable = false)
     @NotBlank(message = "Surname must not be blank")
     @Size(max = 50, message = "Surname must be at most 50 characters")
-    String surName;
+    private String surName;
 
     @Column(nullable = false)
     @NotNull(message = "Birthdate must not be null")
     @Past(message = "Birthdate must be in the past")
-    LocalDate birthDate;
+    private LocalDate birthDate;
 
     @Column(nullable = false)
     @NotBlank(message = "Company must not be blank")
     @Size(max = 100, message = "Company must be at most 100 characters")
-    String company;
+    private String company;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Task> task;
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks;
 
 }

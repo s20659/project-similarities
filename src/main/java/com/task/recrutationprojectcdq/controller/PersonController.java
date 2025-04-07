@@ -2,6 +2,7 @@ package com.task.recrutationprojectcdq.controller;
 
 import com.task.recrutationprojectcdq.model.Person;
 import com.task.recrutationprojectcdq.service.PersonService;
+import com.task.recrutationprojectcdq.service.TaskService;
 import lombok.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,23 +22,27 @@ public class PersonController {
 
     PersonService personService;
 
+    TaskService taskService;
+
     @GetMapping
     public List<Person> getPeople() {
         return personService.getPeople();
     }
 
     @GetMapping("/{id}")
-    public Optional<Person> getOrderById(@PathVariable Integer id) {
+    public Optional<Person> getOrderById(@PathVariable Long id) {
         return personService.getPersonById(id);
     }
 
     @PostMapping
     public Person createPerson(@RequestBody Person person) {
-        return personService.savePerson(person);
+        var createdPerson = personService.savePerson(person);
+        taskService.saveTask(createdPerson);
+        return createdPerson;
     }
 
     @DeleteMapping("/{id}")
-    public void deletePerson(@PathVariable Integer id) {
+    public void deletePerson(@PathVariable Long id) {
         personService.deletePerson(id);
     }
 }

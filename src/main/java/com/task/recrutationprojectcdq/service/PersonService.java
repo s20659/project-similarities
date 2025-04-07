@@ -18,7 +18,7 @@ public class PersonService {
         return personRepository.findAll();
     }
 
-    public Optional<Person> getPersonById(final Integer id) {
+    public Optional<Person> getPersonById(final Long id) {
         return personRepository.findById(id);
     }
 
@@ -26,7 +26,7 @@ public class PersonService {
         return personRepository.save(person);
     }
 
-    public void deletePerson(final Integer id) {
+    public void deletePerson(final Long id) {
         personRepository.deleteById(id);
     }
 }
