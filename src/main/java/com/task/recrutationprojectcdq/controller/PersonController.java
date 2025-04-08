@@ -1,48 +1,59 @@
 package com.task.recrutationprojectcdq.controller;
 
+import com.task.recrutationprojectcdq.dto.PersonDTO;
+import com.task.recrutationprojectcdq.dto.TaskCreatedDTO;
 import com.task.recrutationprojectcdq.model.Person;
-import com.task.recrutationprojectcdq.service.PersonService;
-import com.task.recrutationprojectcdq.service.TaskService;
-import lombok.Value;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.task.recrutationprojectcdq.service.person.PersonService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/person")
-@Value
+@RequestMapping("/people")
 public class PersonController {
 
-    PersonService personService;
+    private final PersonService personService;
 
-    TaskService taskService;
+    @Autowired
+    public PersonController(PersonService personService) {
+        this.personService = personService;
+    }
 
     @GetMapping
-    public List<Person> getPeople() {
-        return personService.getPeople();
+    public ResponseEntity<List<Person>> getPeople() {
+        return ResponseEntity.ok(personService.getPeople());
     }
 
     @GetMapping("/{id}")
-    public Optional<Person> getOrderById(@PathVariable Long id) {
-        return personService.getPersonById(id);
+    public ResponseEntity<Person> getPersonById(@PathVariable final String id) {
+        return personService.getPersonById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Person createPerson(@RequestBody Person person) {
-        var createdPerson = personService.savePerson(person);
-        taskService.saveTask(createdPerson);
-        return createdPerson;
+    public ResponseEntity<TaskCreatedDTO> createPerson(@RequestBody @Valid final PersonDTO personDTO) {
+        TaskCreatedDTO response = personService.savePerson(personDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskCreatedDTO> updatePerson(@PathVariable final String id,
+                                                       @Valid @RequestBody final PersonDTO personDto) {
+        try {
+            TaskCreatedDTO response = personService.updatePerson(id, personDto);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deletePerson(@PathVariable Long id) {
+    public void deletePerson(@PathVariable final String id) {
         personService.deletePerson(id);
     }
 }

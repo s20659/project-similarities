@@ -1,4 +1,4 @@
-package com.task.recrutationprojectcdq.service;
+package com.task.recrutationprojectcdq.service.task;
 
 import com.task.recrutationprojectcdq.model.Person;
 import com.task.recrutationprojectcdq.model.Task;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Service
 @Data
-public class TaskService {
+public class TaskServiceImpl implements TaskService {
 
     private TaskRepository taskRepository;
 
@@ -20,24 +20,30 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public Optional<Task> getTaskById(final Long id) {
+    public Optional<Task> getTaskById(final String id) {
         return taskRepository.findById(id);
     }
 
-    public Task saveTask(final Person person) {
-        return createTask(person);
+    public Task createTaskForPerson(final Person actualPerson, final Person previousPerson) {
+        return createTask(actualPerson, previousPerson);
     }
 
-    public void deleteTask(final Long id) {
+    public void deleteTask(final String id) {
         taskRepository.deleteById(id);
     }
 
-    private Task createTask(final Person person){
+    public List<Task> getTasksByPersonId(final String personId) {
+        return taskRepository.findByPersonId(personId);
+    }
+
+    private Task createTask(final Person person, final Person previousPerson){
         Task task = new Task();
         var identifier = UUID.randomUUID().toString();
         task.setIdentifier(identifier);
-        //task.setResult();
         task.setPerson(person);
-        return task;
+
+        var taskSaved = taskRepository.save(task);
+        taskSaved.start(person, previousPerson);
+        return taskSaved;
     }
 }
