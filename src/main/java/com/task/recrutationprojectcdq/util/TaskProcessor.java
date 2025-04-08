@@ -17,7 +17,7 @@ public class TaskProcessor {
             compareField("birthDate", previous.getBirthDate().toString(), current.getBirthDate().toString(), result);
             compareField("company", previous.getCompany(), current.getCompany(), result);
         } else {
-            classifyCases(previous, current, result);
+            classifyNullCases(previous, current, result);
         }
         return result;
     }
@@ -25,14 +25,13 @@ public class TaskProcessor {
     private static void compareField(final String field, final String previous, final String current,
                                      final Map<String, Classification> result) {
         double similarity = calculateSimilarity(previous, current);
-        Classification classification;
-        if (similarity > 0.9) classification = Classification.HIGH;
-        else if (similarity >= 0.4) classification = Classification.MEDIUM;
-        else classification = Classification.LOW;
+        System.out.println("similarity: " + similarity);
+        System.out.println("-------------------------------\n");
+        var classification = Classification.fromSimilarity(similarity);
         result.put(field, classification);
     }
 
-    private static void classifyCases(final Person previous, final Person current, final Map<String, Classification> result) {
+    private static void classifyNullCases(final Person previous, final Person current, final Map<String, Classification> result) {
         if (previous == null && current != null) {
             createResult(Classification.ADDED, result);
         } else if (previous != null && current == null) {
@@ -47,20 +46,36 @@ public class TaskProcessor {
         }
     }
 
-    private static double calculateSimilarity(final String s1, final String s2) {
-        int difference = calculateDifference(s1, s2);
-        int maxLength = Math.max(s1.length(), s2.length());
-        return 1.0 - ((double) difference / maxLength);
+    public static double calculateSimilarity(String str1, String str2) {
+        int longerLength = Math.max(str1.length(), str2.length());
+
+        int differences = calculateDifferences(str1, str2);
+        double dissimilarity = (double) differences / longerLength;
+
+        return 1.0 - dissimilarity;
     }
 
-    private static int calculateDifference(final String s1, final String s2) {
-        int len = Math.max(s1.length(), s2.length());
-        int difference = 0;
-        for (int i = 0; i < len; i++) {
-            char c1 = i < s1.length() ? s1.charAt(i) : 0;
-            char c2 = i < s2.length() ? s2.charAt(i) : 0;
-            if (c1 != c2) difference++;
+    private static int calculateDifferences(String str1, String str2) {
+        if (str1.length() > str2.length()) {
+            String temp = str1;
+            str1 = str2;
+            str2 = temp;
         }
-        return difference;
+        System.out.println("str1: " + str1 + " str2: " + str2);
+
+        int differences = str2.length() - str1.length();
+        System.out.println("differences: " + differences);
+        for (int i = 0; i < str1.length(); i++) {
+            var character = str1.charAt(i);//BCD ABCD , B : ABCD.contains(B) -> true, powieksza
+            if (!str2.contains(String.valueOf(character))) {
+                differences++;
+            }else{
+                str2 = str2.replaceFirst(String.valueOf(character), "");
+                System.out.println("str2: "+ str2);
+            }
+
+        }
+        System.out.println("differences2: " + differences);
+        return differences;
     }
 }

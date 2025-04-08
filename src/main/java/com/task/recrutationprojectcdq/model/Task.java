@@ -1,5 +1,6 @@
 package com.task.recrutationprojectcdq.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.task.recrutationprojectcdq.util.TaskProcessor;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
@@ -16,11 +17,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Task {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
-    @Column(nullable = false, unique = true)
-    private String identifier;
 
     @Enumerated(EnumType.STRING)
     private TaskStatus status = TaskStatus.PENDING;
@@ -33,28 +31,27 @@ public class Task {
     @MapKeyColumn(name = "field_name", length = 50)
     @Enumerated(EnumType.STRING)
     @Column(name = "classification", length = 20)
-    private Map<String, Classification> result = new HashMap<>();
+    private Map<String, Classification> results = new HashMap<>();
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "personId", nullable = false)
     private Person person;
 
     @Async
     @Transactional
-    public void start(Person previous, Person current) {
+    public void processTaskAsync(Person previous, Person current) {
         this.status = TaskStatus.IN_PROGRESS;
-        this.person = current;
-        new Thread(() -> {
-            try {
-                for (int i = 1; i <= 10; i++) {
-                    Thread.sleep(1000);
-                    this.progress.set(i * 10);
-                }
-                this.result = TaskProcessor.comparePeople(previous, current);
-                this.status = TaskStatus.COMPLETED;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        try {
+            for (int i = 1; i <= 10; i++) {
+                Thread.sleep(10);
+                this.progress.set(i * 10);
+                System.out.println(this.progress.get() + "%");
             }
-        }).start();
+            this.results = TaskProcessor.comparePeople(previous, current);
+            this.status = TaskStatus.COMPLETED;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

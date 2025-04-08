@@ -1,7 +1,7 @@
 package com.task.recrutationprojectcdq.service.person;
 
 import com.task.recrutationprojectcdq.dto.PersonDTO;
-import com.task.recrutationprojectcdq.dto.TaskCreatedDTO;
+import com.task.recrutationprojectcdq.dto.UpsertResultDTO;
 import com.task.recrutationprojectcdq.mapper.ApiMapper;
 import com.task.recrutationprojectcdq.model.Person;
 import com.task.recrutationprojectcdq.model.Task;
@@ -31,16 +31,16 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Transactional
-    public TaskCreatedDTO savePerson(final PersonDTO personDTO) {
+    public UpsertResultDTO savePerson(final PersonDTO personDTO) {
         var person = ApiMapper.convertToPerson(personDTO);
         var personCreated = personRepository.save(person);
 
         final Task task = taskService.createTaskForPerson(personCreated, null);
-        return new TaskCreatedDTO(task.getId(), "Person created successfully");
+        return new UpsertResultDTO(personCreated.getId(), task.getId(), "Person created successfully");
     }
 
     @Transactional
-    public TaskCreatedDTO updatePerson(final String id, final PersonDTO personDto) {
+    public UpsertResultDTO updatePerson(final String id, final PersonDTO personDto) {
         Optional<Person> existingPerson = personRepository.findById(id);
 
         if (existingPerson.isEmpty()) {
@@ -55,11 +55,15 @@ public class PersonServiceImpl implements PersonService {
 
         Task task = taskService.createTaskForPerson(updatedPerson, previousState);
 
-        return new TaskCreatedDTO(task.getIdentifier(), "Person updated successfully");
+        return new UpsertResultDTO(updatedPerson.getId(), task.getId(), "Person updated successfully");
     }
 
-    public void deletePerson(final String id) {
-        personRepository.deleteById(id);
+    public boolean deletePerson(final String id) {
+        return personRepository.findById(id)
+                .map(person -> {
+                    personRepository.delete(person);
+                    return true;
+                }).orElse(false);
     }
 
     private void mapDtoToPerson(PersonDTO dto, Person person) {

@@ -1,7 +1,7 @@
 package com.task.recrutationprojectcdq.service.person;
 
 import com.task.recrutationprojectcdq.dto.PersonDTO;
-import com.task.recrutationprojectcdq.dto.TaskCreatedDTO;
+import com.task.recrutationprojectcdq.dto.UpsertResultDTO;
 import com.task.recrutationprojectcdq.model.Person;
 
 import java.util.List;
@@ -13,9 +13,9 @@ public interface PersonService {
 
     Optional<Person> getPersonById(String id);
 
-    TaskCreatedDTO savePerson(PersonDTO personDTO);
+    UpsertResultDTO savePerson(PersonDTO personDTO);
 
-    TaskCreatedDTO updatePerson(final String id, final PersonDTO personDto);
+    UpsertResultDTO updatePerson(final String id, final PersonDTO personDto);
 
-    void deletePerson(String id);
+    boolean deletePerson(String id);
 }

@@ -2,7 +2,6 @@ package com.task.recrutationprojectcdq.dto;
 
 import com.task.recrutationprojectcdq.model.Classification;
 import com.task.recrutationprojectcdq.model.TaskStatus;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,11 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class TaskDTO {
 
-    @NotBlank(message = "Id must not be blank")
     private String id;
-
-    @NotBlank(message = "Identifier must not be blank")
-    private String identifier;
 
     private TaskStatus status;
 

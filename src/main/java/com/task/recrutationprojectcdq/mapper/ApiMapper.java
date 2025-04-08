@@ -22,7 +22,7 @@ public class ApiMapper {
         dto.setStatus(task.getStatus());
         dto.setProgress(task.getProgress().get());
         dto.setPersonId(task.getPerson().getId());
-        dto.setResults(task.getResult());
+        dto.setResults(task.getResults());
         return dto;
     }
 }

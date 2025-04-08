@@ -1,7 +1,7 @@
 package com.task.recrutationprojectcdq.controller;
 
 import com.task.recrutationprojectcdq.dto.PersonDTO;
-import com.task.recrutationprojectcdq.dto.TaskCreatedDTO;
+import com.task.recrutationprojectcdq.dto.UpsertResultDTO;
 import com.task.recrutationprojectcdq.model.Person;
 import com.task.recrutationprojectcdq.service.person.PersonService;
 import jakarta.validation.Valid;
@@ -36,16 +36,16 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskCreatedDTO> createPerson(@RequestBody @Valid final PersonDTO personDTO) {
-        TaskCreatedDTO response = personService.savePerson(personDTO);
+    public ResponseEntity<UpsertResultDTO> createPerson(@RequestBody @Valid final PersonDTO personDTO) {
+        UpsertResultDTO response = personService.savePerson(personDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskCreatedDTO> updatePerson(@PathVariable final String id,
-                                                       @Valid @RequestBody final PersonDTO personDto) {
+    public ResponseEntity<UpsertResultDTO> updatePerson(@PathVariable final String id,
+                                                        @Valid @RequestBody final PersonDTO personDto) {
         try {
-            TaskCreatedDTO response = personService.updatePerson(id, personDto);
+            UpsertResultDTO response = personService.updatePerson(id, personDto);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -53,7 +53,11 @@ public class PersonController {
     }
 
     @DeleteMapping("/{id}")
-    public void deletePerson(@PathVariable final String id) {
-        personService.deletePerson(id);
+    public ResponseEntity<?> deletePerson(@PathVariable final String id) {
+        var deleted = personService.deletePerson(id);
+        if(!deleted){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok("Person deleted successfully");
     }
 }

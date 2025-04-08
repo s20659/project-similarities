@@ -2,7 +2,7 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY target/task-processor-0.0.1-SNAPSHOT.jar app.jar
+COPY target/recrutation-project-cdq-1.0.0.0.jar app.jar
 
 EXPOSE 8080
 

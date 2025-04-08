@@ -8,13 +8,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Data
 public class TaskServiceImpl implements TaskService {
 
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     public List<Task> getTasks() {
         return taskRepository.findAll();
@@ -36,14 +35,13 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findByPersonId(personId);
     }
 
-    private Task createTask(final Person person, final Person previousPerson){
+    private Task createTask(final Person currentPerson, final Person previousPerson) {
         Task task = new Task();
-        var identifier = UUID.randomUUID().toString();
-        task.setIdentifier(identifier);
-        task.setPerson(person);
+        task.setPerson(currentPerson);
 
         var taskSaved = taskRepository.save(task);
-        taskSaved.start(person, previousPerson);
+
+        taskSaved.processTaskAsync(previousPerson, currentPerson);
         return taskSaved;
     }
 }

@@ -1,5 +1,6 @@
 package com.task.recrutationprojectcdq.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -15,7 +16,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PersonDTO {
 
-    @NotBlank(message = "Id must not be blank")
     private String id;
 
     @NotBlank(message = "Name must not be blank")
@@ -28,6 +28,7 @@ public class PersonDTO {
 
     @NotNull(message = "Birthdate must not be null")
     @Past(message = "Birthdate must be in the past")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
     @NotBlank(message = "Company must not be blank")
