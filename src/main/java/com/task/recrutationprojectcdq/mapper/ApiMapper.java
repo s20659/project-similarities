@@ -17,12 +17,12 @@ public class ApiMapper {
     }
 
     public static TaskDTO convertToTaskDTO(final Task task) {
-        TaskDTO dto = new TaskDTO();
-        dto.setId(task.getId());
-        dto.setStatus(task.getStatus());
-        dto.setProgress(task.getProgress().get());
-        dto.setPersonId(task.getPerson().getId());
-        dto.setResults(task.getResults());
-        return dto;
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setId(task.getId());
+        taskDTO.setStatus(task.getStatus());
+        taskDTO.setProgress(task.getProgress());
+        taskDTO.setPersonId(task.getPerson().getId());
+        taskDTO.setResults(task.getResults());
+        return taskDTO;
     }
 }

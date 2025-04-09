@@ -14,8 +14,6 @@ public interface TaskService {
 
     Task createTaskForPerson(Person actualPerson, Person previousPerson);
 
-    void deleteTask(String id);
-
     List<Task> getTasksByPersonId(String personId);
 
 }

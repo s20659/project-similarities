@@ -3,14 +3,15 @@ package com.task.recrutationprojectcdq.util;
 import com.task.recrutationprojectcdq.model.Classification;
 import com.task.recrutationprojectcdq.model.Person;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TaskProcessor {
 
     public static Map<String, Classification> comparePeople(final Person previous, final Person current) {
-        Map<String, Classification> result = new HashMap<>();
+        Map<String, Classification> result = new LinkedHashMap<>();
+
         if (previous != null && current != null) {
             compareField("name", previous.getName(), current.getName(), result);
             compareField("surname", previous.getSurname(), current.getSurname(), result);
@@ -25,8 +26,6 @@ public class TaskProcessor {
     private static void compareField(final String field, final String previous, final String current,
                                      final Map<String, Classification> result) {
         double similarity = calculateSimilarity(previous, current);
-        System.out.println("similarity: " + similarity);
-        System.out.println("-------------------------------\n");
         var classification = Classification.fromSimilarity(similarity);
         result.put(field, classification);
     }
@@ -61,21 +60,17 @@ public class TaskProcessor {
             str1 = str2;
             str2 = temp;
         }
-        System.out.println("str1: " + str1 + " str2: " + str2);
 
         int differences = str2.length() - str1.length();
-        System.out.println("differences: " + differences);
         for (int i = 0; i < str1.length(); i++) {
-            var character = str1.charAt(i);//BCD ABCD , B : ABCD.contains(B) -> true, powieksza
+            var character = str1.charAt(i);
             if (!str2.contains(String.valueOf(character))) {
                 differences++;
-            }else{
+            } else {
                 str2 = str2.replaceFirst(String.valueOf(character), "");
-                System.out.println("str2: "+ str2);
             }
 
         }
-        System.out.println("differences2: " + differences);
         return differences;
     }
 }

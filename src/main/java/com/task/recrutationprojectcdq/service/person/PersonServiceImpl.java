@@ -6,7 +6,7 @@ import com.task.recrutationprojectcdq.mapper.ApiMapper;
 import com.task.recrutationprojectcdq.model.Person;
 import com.task.recrutationprojectcdq.model.Task;
 import com.task.recrutationprojectcdq.repository.PersonRepository;
-import com.task.recrutationprojectcdq.service.task.TaskServiceImpl;
+import com.task.recrutationprojectcdq.service.task.TaskService;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
 
-    private final TaskServiceImpl taskService;
+    private final TaskService taskService;
 
     public List<Person> getPeople() {
         return personRepository.findAll();
@@ -40,7 +40,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Transactional
-    public UpsertResultDTO updatePerson(final String id, final PersonDTO personDto) {
+    public UpsertResultDTO updatePerson(final String id, final PersonDTO personDTO) {
         Optional<Person> existingPerson = personRepository.findById(id);
 
         if (existingPerson.isEmpty()) {
@@ -50,7 +50,7 @@ public class PersonServiceImpl implements PersonService {
         Person person = existingPerson.get();
         Person previousState = clonePerson(person);
 
-        mapDtoToPerson(personDto, person);
+        mapDtoToPerson(personDTO, person);
         var updatedPerson = personRepository.save(person);
 
         Task task = taskService.createTaskForPerson(updatedPerson, previousState);
@@ -74,12 +74,12 @@ public class PersonServiceImpl implements PersonService {
     }
 
     private Person clonePerson(Person person) {
-        Person clone = new Person();
-        clone.setId(person.getId());
-        clone.setName(person.getName());
-        clone.setSurname(person.getSurname());
-        clone.setBirthDate(person.getBirthDate());
-        clone.setCompany(person.getCompany());
-        return clone;
+        Person personClone = new Person();
+        personClone.setId(person.getId());
+        personClone.setName(person.getName());
+        personClone.setSurname(person.getSurname());
+        personClone.setBirthDate(person.getBirthDate());
+        personClone.setCompany(person.getCompany());
+        return personClone;
     }
 }

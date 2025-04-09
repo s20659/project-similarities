@@ -15,6 +15,8 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
 
+    private final TaskRunner taskRunner;
+
     public List<Task> getTasks() {
         return taskRepository.findAll();
     }
@@ -27,10 +29,6 @@ public class TaskServiceImpl implements TaskService {
         return createTask(actualPerson, previousPerson);
     }
 
-    public void deleteTask(final String id) {
-        taskRepository.deleteById(id);
-    }
-
     public List<Task> getTasksByPersonId(final String personId) {
         return taskRepository.findByPersonId(personId);
     }
@@ -38,10 +36,9 @@ public class TaskServiceImpl implements TaskService {
     private Task createTask(final Person currentPerson, final Person previousPerson) {
         Task task = new Task();
         task.setPerson(currentPerson);
-
         var taskSaved = taskRepository.save(task);
 
-        taskSaved.processTaskAsync(previousPerson, currentPerson);
+        taskRunner.runTaskAsync(taskSaved, previousPerson, currentPerson);
         return taskSaved;
     }
 }
